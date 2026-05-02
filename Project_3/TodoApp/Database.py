@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # Database connection with sqlite -----------  start -----------
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./todoApp.db"
-# engine  = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SQLALCHEMY_DATABASE_URL = "sqlite:///./todoApp.db"
+engine  = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 # Database connection with sqlite -----------  end -----------
 
 # Database connection with postgress SQL -----------  start -----------
 # pip install psycopg2-binary
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Admin%40123@localhost/TodoApplicationDatabase"
-engine  = create_engine(SQLALCHEMY_DATABASE_URL)
+# SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Admin%40123@localhost/TodoApplicationDatabase"
+# engine  = create_engine(SQLALCHEMY_DATABASE_URL)
 # Database connection with postgress SQL -----------  end -----------
 
 
