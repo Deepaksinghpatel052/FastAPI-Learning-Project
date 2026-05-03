@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 from .utils import *
 from fastapi import status
-from ..routers.auth import get_db, authonticate_user
+from ..routers.auth import get_db, authonticate_user, create_access_token, SECRET_KEY, ALGORITHEM
 from sqlalchemy.exc import IntegrityError
+from jose import jwt, JWTError
 
 app.dependency_overrides[get_db] = overwrite_get_db
 
@@ -66,3 +69,17 @@ def test_create_access_token_with_wrong_credentials(test_user):
     response = client.post("/auth/token", data=data)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {"detail": "Could not validate user"}
+
+
+def test_create_access_token():
+    expires_delta=timedelta(minutes=15)
+    acces_tokec = create_access_token(username="testuser", user_id=1, role="user", expires_delta=expires_delta)
+    assert acces_tokec is not None
+    decode_tokec = jwt.decode(acces_tokec, SECRET_KEY, algorithms=[ALGORITHEM], options={"verify_exp": False})
+    assert decode_tokec["sub"] == "testuser"
+    assert decode_tokec["id"] == 1
+    assert decode_tokec["role"] == "user"
+
+
+
+
