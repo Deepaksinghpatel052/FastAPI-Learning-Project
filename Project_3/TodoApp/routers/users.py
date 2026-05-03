@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
-from models import Todos, Users
+from ..models import Todos, Users
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
-from Database import SessionLocal
+from ..Database import SessionLocal
 from sqlalchemy.orm import session
 from typing import Annotated
 from starlette import status
@@ -50,8 +50,10 @@ async def get_user(current_user: user_dependency, db: db_dependency):
             "role":user_info.role}
 
 class passwordVarification(BaseModel):
-    current_password: str = Field(min_length=1, max_length=10)
-    new_password: str = Field(min_length=1, max_length=10)
+    current_password: str = Field(min_length=1, max_length=20)
+    new_password: str = Field(min_length=1, max_length=20)
+
+
 
 @router.put("/change_password", status_code=status.HTTP_204_NO_CONTENT)
 async def change_password(current_user: user_dependency, db: db_dependency, password_varification: passwordVarification):
