@@ -9,7 +9,7 @@ from ..Database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import session
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from jose import jwt
+from jose import JWTError, jwt
 
 
 router = APIRouter(

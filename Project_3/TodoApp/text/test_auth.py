@@ -1,10 +1,11 @@
-from datetime import timedelta
-
+from datetime import timedelta, timezone, datetime
 from .utils import *
-from fastapi import status
-from ..routers.auth import get_db, authonticate_user, create_access_token, SECRET_KEY, ALGORITHEM
+from fastapi import HTTPException, status
+from ..routers.auth import get_db, authonticate_user, create_access_token, SECRET_KEY, ALGORITHEM, get_current_user
 from sqlalchemy.exc import IntegrityError
-from jose import jwt, JWTError
+from jose import jwt
+import pytest
+
 
 app.dependency_overrides[get_db] = overwrite_get_db
 
@@ -81,5 +82,25 @@ def test_create_access_token():
     assert decode_tokec["role"] == "user"
 
 
+@pytest.mark.asyncio
+async def test_get_current_user_tocken_varification():
+    encode = {"sub": "username", "id": "1", "role": "Admin"}
+    expires_delta  = timedelta(minutes=15)
+    expires = datetime.now(timezone.utc) + expires_delta
+    encode.update({"exp": expires})
+    token =  jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHEM)
+    user = await get_current_user(token)
+    assert user["username"] == "username" 
+    assert user["id"] == "1"
+    assert user["user_role"] == "Admin"
 
 
+@pytest.mark.asyncio
+async def test_get_current_user_with_invalid_payload():
+    encode = {"sub": "username"}
+    token =  jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHEM)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await get_current_user(token)
+    assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
+    assert exc_info.value.detail == "Could not validate user"
